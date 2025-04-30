@@ -4,18 +4,36 @@
 #include "Config.h"
 
 void setupUltrasonic() {
-  pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(trigPinGate, OUTPUT);
+  pinMode(echoPinGate, INPUT);
+  pinMode(trigPinLane, OUTPUT);
+  pinMode(echoPinLane, INPUT);
+
 }
 
-long readDistance() {
-  digitalWrite(trigPin, LOW);
+long readDistanceGate() {
+  digitalWrite(trigPinGate, LOW);
   delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
+  digitalWrite(trigPinGate, HIGH);
   delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
+  digitalWrite(trigPinGate, LOW);
 
-  long duration = pulseIn(echoPin, HIGH);
+  long duration = pulseIn(echoPinGate, HIGH);
+  long distance = duration * 0.034 / 2;
+
+  delay(10); 
+  return distance;
+}
+
+
+long readDistanceLane() {
+  digitalWrite(trigPinLane, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPinLane, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPinLane, LOW);
+
+  long duration = pulseIn(echoPinLane, HIGH);
   long distance = duration * 0.034 / 2;
 
   delay(10); 

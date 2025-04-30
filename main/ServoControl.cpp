@@ -18,6 +18,6 @@ void setupServo() {
 }
 
 void rotateServoIfNeeded(long distance) {
-  if (distance < distanceThreshold) {myServo.write(90);  // Rotate to 90°}
-  else {myServo.write(0); }
+  if (distance < distanceThreshold) myServo.write(90);  // Rotate to 90°}
+  else myServo.write(0); 
 }

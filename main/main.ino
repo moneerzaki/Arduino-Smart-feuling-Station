@@ -4,7 +4,7 @@
 
 // Function prototypes
 void setupUltrasonic();
-long readDistance();
+long readDistanceGate();
 void setupServo();
 void rotateServoIfNeeded(long distance);
 long median (long a, long b, long c)
@@ -19,19 +19,32 @@ void setup() {
   Serial.begin(9600);
   setupUltrasonic();
   setupServo();
+  // lcd 
+  // keypad 
+  
+}
+
+
+
+
+
+void Gate(){
+    long d1 = readDistanceGate();
+    long d2 = readDistanceGate();
+    long d3 = readDistanceGate();
+    long final_dist = median(d1, d2, d3); 
+
+    Serial.print("Distance: ");
+    Serial.print(final_dist);
+    Serial.println(" cm");
+
+    rotateServoIfNeeded(final_dist);
 }
 
 void loop() {
-  long d1 = readDistance();
-  long d2 = readDistance();
-  long d3 = readDistance();
-  long final_dist = median(d1, d2, d3); 
+  
+  Gate();
+  // Lane(); 
 
-  Serial.print("Distance: ");
-  Serial.print(final_dist);
-  Serial.println(" cm");
-
-  rotateServoIfNeeded(final_dist);
-
-  delay(100);
+  delay(10);
 }
