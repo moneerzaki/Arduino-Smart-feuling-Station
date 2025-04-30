@@ -1,6 +1,6 @@
 // Ultrasonic.cpp
 
-#include <Arduino.h>
+// #include <Arduino.h>
 #include "Config.h"
 
 void setupUltrasonic() {
@@ -25,7 +25,7 @@ long readDistanceGate() {
   return distance;
 }
 
-
+     
 long readDistanceLane() {
   digitalWrite(trigPinLane, LOW);
   delayMicroseconds(2);

@@ -1,6 +1,6 @@
 // ServoControl.cpp
 
-#include <Arduino.h>
+// #include <Arduino.h>
 #include <Servo.h>
 #include "Config.h"
 

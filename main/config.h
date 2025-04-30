@@ -3,6 +3,10 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <Arduino.h>
+#include <Keypad.h>
+#include <LiquidCrystal_I2C.h>
+
 
 /////////////// Gate ////////////////////////
 
@@ -20,19 +24,25 @@ const int echoPinGate = 10;
 
 
 
-//////////////// Lane ///////////////////////
-const int trigPinLane = 2; 
-const int echoPinLane = 3;
+//////////////// Lane1 ///////////////////////
+// ultra sonic lane
+const int trigPinLane = A0; 
+const int echoPinLane = A1; 
 
 // LCD  (already configured no need to assign)
-// const int lcd_sda = 
-// const int lcd_scl = 
+// A4, A5 are assigned automatically 
+extern LiquidCrystal_I2C lcd;
 
-// keypad 
-const int col1 = A3; 
-const int col2 = A2; 
-const int col3 = A1; 
-const int colA = A0; 
+void initializeLCD();
+
+
+// Keypad setup
+extern const byte ROWS;
+extern const byte COLS;
+extern char keys[4][4];
+extern byte rowPins[4];
+extern byte colPins[4];
+extern Keypad keypad;
 
 ///////////////////////////////////////////
 
