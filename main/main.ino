@@ -103,8 +103,6 @@ long calculatePrice(){
 
 }
 
-
-
 // The whole code for the entry gate
 void Gate(){
     long d1 = readDistanceGate();
@@ -128,10 +126,14 @@ void Lane(){
   // Serial.println(final_dist); 
 
   if (final_dist > 20) {
+    digitalWrite(greenLED, LOW);
+    digitalWrite(redLED, HIGH);
     currstate = 1;
     printlcd("Come closer","please :)");
   }
   else if (final_dist <= 20 && currstate == 1){
+    digitalWrite(greenLED, HIGH);
+    digitalWrite(redLED, LOW);
     printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
     st1 = waitForKey(); 
     if (st1 == '1' || st1 == '2' || st1 == '3') currstate = 2; 
@@ -184,15 +186,16 @@ void setup() {
   setupUltrasonic();
   setupServo(); 
   initializeLCD();
+  pinMode(redLED, OUTPUT); //for red led
+  pinMode(greenLED, OUTPUT); //for green led
 }
 
 void loop() {
   
-  // Gate();
-  Lane(); 
+  Gate();
+  // Lane(); 
 
   delay(10);
- 
 }
 
 
