@@ -21,11 +21,14 @@ void setupServo() {
 
 }
 
-void rotateServoIfNeeded(long distance) {
+int rotateServoIfNeeded(long distance) {
   // if (distance < distanceThreshold) myServo.write(90);  // Rotate to 90°}
   // else myServo.write(0); 
-  if (distance < distanceThreshold) write(90);  // Rotate to 90°}
-  else write(0); 
-
-
+  int r = 0;
+  if (distance < distanceThreshold) {write(90); 
+    delay(2000);
+    r = 1; write(0);
+  } // Rotate to 90°}
+  else {write(0);} 
+  return r;
 }

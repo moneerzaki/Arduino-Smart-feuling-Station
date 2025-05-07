@@ -14,7 +14,7 @@ void setupUltrasonic();
 long readDistanceGate();
 long readDistanceLane();
 void setupServo();
-void rotateServoIfNeeded(long distance);
+int rotateServoIfNeeded(long distance);
 
 // get an accurate reading from the US sensor 
 long median (long a, long b, long c)
@@ -52,14 +52,14 @@ char waitForKey(String line1 = "", String line2 = "", bool useProximity = true) 
             long final_dist = median(d1, d2, d3); 
 
             if (final_dist >= 20) {
-              red = 1;
                 if (!wasAway) {
                     startAwayTime = millis();
                     wasAway = true;
                     printlcd("Come closer", "please :)");
+                    red = 1; //change
                     // digitalWrite(greenLED, LOW);
                     // digitalWrite(redLED, HIGH);
-                } else if (millis() - startAwayTime >= 10000) {
+                } else if (millis() - startAwayTime >= 5000) {
                     red = 0;
                     //asm volatile ("jmp 0"); // Reset
                     currstate=1;
@@ -145,7 +145,14 @@ void Gate(){
     Serial.print(final_dist);
     Serial.println(" cm");
 
-    if(red == 0) rotateServoIfNeeded(final_dist);
+    if(red == 0){
+      red = rotateServoIfNeeded(final_dist);
+    }
+
+    if (red){
+      digitalWrite(redLED, LOW);
+      digitalWrite(greenLED, HIGH);
+    }
 }
 
 // the whole code for the Lane 
@@ -157,22 +164,26 @@ void Lane(){
   // Serial.println(final_dist); 
 
   if (final_dist > 20) {
-    red = 1;
+    // red = 1;
     if(!isAway)
     {
     // First time noticing user is away
       awayStartTime = millis();
       isAway = true;
       printlcd("Come closer", "please :)");
-      digitalWrite(greenLED, LOW);
-      digitalWrite(redLED, HIGH);
+      if(!red){ //change
+        digitalWrite(greenLED, LOW);
+        digitalWrite(redLED, HIGH);
+        red = 0;
+      }
 
     }
     else {
       // Check how long they've been away
-      if (millis() - awayStartTime >= 10000) {
+      if (millis() - awayStartTime >= 5000) {
         // Stayed away for 10 sec: restart entire project
         //asm volatile ("jmp 0");  // AVR reset
+        red = 0; //change
         currstate = 1;
       }
     }
@@ -182,10 +193,9 @@ void Lane(){
       // User returned before 10 sec
       isAway = false;
       currstate = 0;  // Restart only lane program
-      if(red){
-        digitalWrite(greenLED, HIGH);
-        digitalWrite(redLED, LOW);
-      }
+      digitalWrite(greenLED, HIGH);
+      digitalWrite(redLED, LOW);
+      red = 1;
       // red = 1;
       printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
       st1 = waitForKey("Hello!", "1:El 2:Oil 3:Gas"); 
@@ -199,6 +209,7 @@ void Lane(){
   if (final_dist <= 20 && currstate == 1){
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
+    red = 1;
     // printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
     st1 = waitForKey("Hello!", "1:El 2:Oil 3:Gas");  
     if (st1 == '1' || st1 == '2' || st1 == '3') currstate = 2; 
@@ -243,7 +254,7 @@ void Lane(){
       currstate = 5;
     }
   } 
-  else if(final_dist <= 20 && currstate == 5){} 
+  else if(final_dist <= 20 && currstate == 5){red = 0;} 
 
 }
 
