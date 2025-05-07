@@ -6,6 +6,8 @@
   int currstate = 0;
   char st1,st2,st3; 
   long st4; 
+  unsigned long awayStartTime = 0;
+  bool isAway = false;
 
 // Function prototypes
 void setupUltrasonic();
@@ -32,26 +34,55 @@ void printlcd(String str1, String str2){
   lcd.print(str2); //"1:El 2:Oil 3:Gas"
 }
 
+int red = 0;
+
 // wait for the keypad keys to be pressed 
-char waitForKey() {
+char waitForKey(String line1 = "", String line2 = "", bool useProximity = true) {
     char key = NO_KEY;
+    unsigned long startAwayTime = 0;
+    bool wasAway = false;
+
+    printlcd(line1, line2);
+
     while (key == NO_KEY) {
-       
-      long d1 = readDistanceLane();
-      long d2 = readDistanceLane();
-      long d3 = readDistanceLane();
-      long final_dist = median(d1, d2, d3); 
-      while (final_dist >= 20) {
-        long d1 = readDistanceLane();
-        long d2 = readDistanceLane();
-        long d3 = readDistanceLane();
-        final_dist = median(d1, d2, d3);  
-        // printlcd("Come closer!!", ""); 
+        if (useProximity) {
+            long d1 = readDistanceLane();
+            long d2 = readDistanceLane();
+            long d3 = readDistanceLane();
+            long final_dist = median(d1, d2, d3); 
+
+            if (final_dist >= 20) {
+              red = 1;
+                if (!wasAway) {
+                    startAwayTime = millis();
+                    wasAway = true;
+                    printlcd("Come closer", "please :)");
+                    // digitalWrite(greenLED, LOW);
+                    // digitalWrite(redLED, HIGH);
+                } else if (millis() - startAwayTime >= 10000) {
+                    red = 0;
+                    //asm volatile ("jmp 0"); // Reset
+                    currstate=1;
+                    break;
+                }
+            } else {
+                if (wasAway) {
+                    printlcd(line1, line2);
+                    // if(red){
+                    //   digitalWrite(greenLED, HIGH);
+                    //   digitalWrite(redLED, LOW);
+                    // }
+                    wasAway = false;
+                }
+            }
         }
-      key = keypad.getKey();
+
+        key = keypad.getKey();
     }
-    return key; 
+
+    return key;
 }
+
 
 long waitForPQ(String str) {
   String inputStr = "";
@@ -114,7 +145,7 @@ void Gate(){
     Serial.print(final_dist);
     Serial.println(" cm");
 
-    rotateServoIfNeeded(final_dist);
+    if(red == 0) rotateServoIfNeeded(final_dist);
 }
 
 // the whole code for the Lane 
@@ -126,16 +157,50 @@ void Lane(){
   // Serial.println(final_dist); 
 
   if (final_dist > 20) {
-    digitalWrite(greenLED, LOW);
-    digitalWrite(redLED, HIGH);
-    currstate = 1;
-    printlcd("Come closer","please :)");
+    red = 1;
+    if(!isAway)
+    {
+    // First time noticing user is away
+      awayStartTime = millis();
+      isAway = true;
+      printlcd("Come closer", "please :)");
+      digitalWrite(greenLED, LOW);
+      digitalWrite(redLED, HIGH);
+
+    }
+    else {
+      // Check how long they've been away
+      if (millis() - awayStartTime >= 10000) {
+        // Stayed away for 10 sec: restart entire project
+        //asm volatile ("jmp 0");  // AVR reset
+        currstate = 1;
+      }
+    }
   }
-  else if (final_dist <= 20 && currstate == 1){
+  else {
+    if (isAway) {
+      // User returned before 10 sec
+      isAway = false;
+      currstate = 0;  // Restart only lane program
+      if(red){
+        digitalWrite(greenLED, HIGH);
+        digitalWrite(redLED, LOW);
+      }
+      // red = 1;
+      printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
+      st1 = waitForKey("Hello!", "1:El 2:Oil 3:Gas"); 
+      if (st1 == '1' || st1 == '2' || st1 == '3') currstate = 2; 
+      else currstate = 1;
+      return;  // Restarted lane, no need to proceed
+    }
+  }
+  
+
+  if (final_dist <= 20 && currstate == 1){
     digitalWrite(greenLED, HIGH);
     digitalWrite(redLED, LOW);
-    printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
-    st1 = waitForKey(); 
+    // printlcd("Hello!", "1:El 2:Oil 3:Gas"); 
+    st1 = waitForKey("Hello!", "1:El 2:Oil 3:Gas");  
     if (st1 == '1' || st1 == '2' || st1 == '3') currstate = 2; 
     else currstate = 1; 
   } 
@@ -145,7 +210,7 @@ void Lane(){
     else if(st1 == '3') printlcd("1:12.5 2:25 3:35", "B:back"); 
 
     if(st1!='1'){
-      st2 = waitForKey(); 
+      st2 = waitForKey("1:80 2:92 3:95", "B:back"); 
       if(st2 == 'B')  currstate = 1;
       else if (st2 == '1' || st2 == '2' || st2 == '3')       
         currstate = 3; 
@@ -153,8 +218,8 @@ void Lane(){
     }
   } 
   else if (final_dist <= 20 && currstate == 3){
-    printlcd("1:Price 2:Qwntty", "B:back");
-    st3 = waitForKey(); 
+    // printlcd("1:Price 2:Qwntty", "B:back");
+    st3 = waitForKey("1:Price 2:Qwntty", "B:back"); 
     if (st3 == 'B' && st1 == '1') currstate = 1; 
     else if(st3 == 'B')  currstate = 2;
     else if (st3 == '1' || st3 == '2')          
