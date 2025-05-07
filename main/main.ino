@@ -155,7 +155,8 @@ void Lane(){
   else if (final_dist <= 20 && currstate == 3){
     printlcd("1:Price 2:Qwntty", "B:back");
     st3 = waitForKey(); 
-    if(st3 == 'B')  currstate = 2;
+    if (st3 == 'B' && st1 == '1') currstate = 1; 
+    else if(st3 == 'B')  currstate = 2;
     else if (st3 == '1' || st3 == '2')          
       currstate = 4; 
     else currstate = 3;
@@ -193,7 +194,7 @@ void setup() {
 void loop() {
   
   Gate();
-  // Lane(); 
+  Lane(); 
 
   delay(10);
 }
