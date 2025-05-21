@@ -217,11 +217,18 @@ void Lane(){
   } 
   else if (final_dist <= 20 && currstate == 2){
     if(st1 == '1') currstate = 3;
-    else if(st1 == '2') printlcd("1:80 2:92 3:95", "B:back"); 
-    else if(st1 == '3') printlcd("1:12.5 2:25 3:35", "B:back"); 
+    // else if(st1 == '2') printlcd("1:80 2:92 3:95", "B:back"); 
+    // else if(st1 == '3') printlcd("1:12.5 2:25 3:35", "B:back"); 
 
-    if(st1!='1'){
+    if(st1=='2'){
       st2 = waitForKey("1:80 2:92 3:95", "B:back"); 
+      if(st2 == 'B')  currstate = 1;
+      else if (st2 == '1' || st2 == '2' || st2 == '3')       
+        currstate = 3; 
+      else currstate = 2; 
+    }
+    if(st1=='3'){
+      st2 = waitForKey("1:12.5 2:25 3:35", "B:back"); 
       if(st2 == 'B')  currstate = 1;
       else if (st2 == '1' || st2 == '2' || st2 == '3')       
         currstate = 3; 
@@ -250,7 +257,7 @@ void Lane(){
       if(st3 == '2') price = calculatePrice(); 
       else price = st4; 
       printlcd(String(price) + " LE", "Thanks See You"); 
-      delay(1000);
+      //delay(1000);
       currstate = 5;
     }
   } 
