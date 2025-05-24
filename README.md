@@ -2,7 +2,6 @@
 
 # Smart Banzina - Embedded Systems Project
 
-![Project Banner](https://via.placeholder.com/800x200.png?text=Smart+Banzina+-+Automated+Fuel+Dispensing+System)  
 *An embedded system for streamlined fuel selection and dispensing.*
 
 ## 📖 Overview
@@ -47,8 +46,8 @@
 4. **Upload Code**: Clone this repo and upload `SmartBanzina.ino` to the Arduino Mega.
 
 ## 🎥 Demo & Documentation
-- **Video Demo**: [Watch Here](https://drive.google.com/file/d/1E7Bo0DQ7smLnztnDFemcEOtmZzSjLCGL/view?usp=drive_link) (Link pending update).
-- **Full Report**: [Google Docs](https://docs.google.com/document/d/1NTYLodnASU8HxHYVh4s2Tff2L0fprDjRHNhaNvJoEf0).
+- **Video Demo**: [Watch Here](https://drive.google.com/file/d/1E7Bo0DQ7smLnztnDFemcEOtmZzSjLCGL/view?usp=drive_link).
+- **Full Report**: [Google Docs](https://docs.google.com/document/d/1fz35-EM4pPZMkG0CflypKnJzA1uq7UddoBSqJs_Gv50/edit?usp=sharing).
 
 ## ❗ Known Issues
 - **Keypad Row 3**: Non-functional due to hardware wiring (code skips affected inputs).
